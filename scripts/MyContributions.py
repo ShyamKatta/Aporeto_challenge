@@ -7,29 +7,25 @@ import pytz
 from tzlocal import get_localzone
 from pytz import timezone		# need to install pytz by running pip install pytz
 
-#import set
-
 inp = sys.argv
 if len(inp)!=2:
 	print "please input in format -> python trials.py 'Github username'"
 	exit()
 iter = 1
 uname = inp[1]	#"harshakanamanapalli"
-url = "https://api.github.com/users/"+uname+"/events?page="+str(iter)+"&per_page=100"
-#data = '{  "platform": {    "login": {      "userName": "shyamkatta",      "password": "xx"    }}}'
+
 mycounts = {}
 totalcount = 0
 mylist = []
+final_result= {}
 
 from tzlocal import get_localzone
 local_tz = get_localzone()
 utc = pytz.timezone('UTC')
 year_back_date = ((utc.localize(datetime.datetime.now()).astimezone(get_localzone()))-datetime.timedelta(days=365))
-#print year_back_date
-#print local_tz
 
-final_result= {}
-
+# Fetch all 300 events for the requested user through github API
+url = "https://api.github.com/users/"+uname+"/events?page="+str(iter)+"&per_page=100"
 while(1):
 	r = requests.get(url,auth = ('shyamkatta','f49cb7f4e110672f4ddc22657b4886f04dad2e40'),headers={"Content-Type": "application/json"})
 	jsonObj  = r.json()
@@ -39,21 +35,16 @@ while(1):
 			repo_id = i['repo']['name']
 			mytuple = (type,repo_id)
 			mylist.append(mytuple)
-			# if type in mycounts.keys():
-				# mycounts[type]+=1
-			# else:
-				# mycounts[type]=1
 			totalcount+=1
 		iter+=1
 		url = "https://api.github.com/users/"+uname+"/events?page="+str(iter)+"&per_page=100"
 	else:
 		break
 
-# get user npn forked repositories
+# Fetch user personal repositories, public 
 iter=1
 url = "https://api.github.com/search/repositories?q=user:"+uname+"&per_page=100"
 #https://api.github.com/search/repositories?q=user:shyamkatta
-					
 
 # url = "api.github.com/users/"+uname+"/repos"
 r = requests.get(url,auth = ('shyamkatta','f49cb7f4e110672f4ddc22657b4886f04dad2e40'),headers={"Content-Type": "application/json"})
@@ -68,11 +59,6 @@ if r.status_code==200  or r.status_code == 304:
 		# add the timezone for this as UTC
 		utc_date = utc.localize(utc_date)
 		local_date = utc_date.astimezone(get_localzone())
-		#local_date = utc_date.astimezone(timezone(local_tz))
-		#print utc_date#+" is utc date"
-		#print local_date#+" is local date"
-
-		#print date.strftime('%x')
 		if local_date.strftime('%x') in final_result.keys():
 			final_list = final_result[local_date.strftime('%x')]
 			final_list[3]+=1		# increment the pull req count of the date by 1
@@ -87,9 +73,9 @@ if r.status_code==200  or r.status_code == 304:
 			final_result[local_date.strftime('%x')]=final_list
 
 
-# users organizations 
+# Fetch user organizations 
 # https://api.github.com/users/Dogild/orgs
-# assuming user would not be in >100 organizations
+# assuming user would not be in >100 organizations, we do not iterate through pages as we did in previous API calls
 url = "https://api.github.com/users/"+uname+"/orgs?per_page=100"
 orgs_repo_url=[]
 
@@ -99,8 +85,7 @@ if (r.status_code==200  or r.status_code == 304) and (len(jsonObj)!=0):
 	for orgs in jsonObj:
 		orgs_repo_url.append(orgs['repos_url'])
 
-#print orgs_repo_url
-
+# If there are organizations for user, iterate through each organization repositories and add them to repos array
 if(len(orgs_repo_url)!=0):
 	for orgs in orgs_repo_url:
 		# iterate for all pages
@@ -109,9 +94,7 @@ if(len(orgs_repo_url)!=0):
 			url = orgs+"?page="+str(iter)+"&per_page=100"
 			r = requests.get(url,auth = ('shyamkatta','f49cb7f4e110672f4ddc22657b4886f04dad2e40'),headers={"Content-Type": "application/json"})
 			jsonObj = r.json()
-			#print url
 			if (r.status_code==200  or r.status_code == 304) and (len(jsonObj)!=0):
-				#print len(jsonObj)
 				for i in jsonObj:
 					if(not i['fork']):
 						repo_id = i['full_name']
@@ -121,40 +104,29 @@ if(len(orgs_repo_url)!=0):
 			else:
 				break
 
-#print("====================================")
-#print mylist
-#print("====================================")
-# add issues
-# https://api.github.com/search/issues?q=type:apr+state:closed+author:shyamkatta&per_page=100&page=1
-iter = 1
+# The following notations will be used when storing in the dictionary
 # 0-commits, 1-issues, 2-pull-requests, 3-created
-# str.split('T')[0]
-# date = datetime.datetime.strptime(<date_string>, "%Y-%m-%dT%H:%M:%SZ")
+
+# Fetch issues of user which are pull requests, add to contributions if the repo is not forked
+iter = 1
 url = "https://api.github.com/search/issues?q=type:pr+author:"+uname+"&per_page=100"
 
-from pytz import timezone
 while(1):
 	r = requests.get(url+"&page="+str(iter),auth = ('shyamkatta','f49cb7f4e110672f4ddc22657b4886f04dad2e40'),headers={"Content-Type": "application/json"})
 	jsonObj  = r.json()
 	if (r.status_code==200  or r.status_code == 304) and (len(jsonObj)!=0):
 		for i in jsonObj['items']:
 			# add the timezone for this as UTC
-			
 			utc_date = datetime.datetime.strptime(i['created_at'], "%Y-%m-%dT%H:%M:%SZ")
 			utc_date = utc.localize(utc_date)
 			local_date = utc_date.astimezone(get_localzone())
-			#datetime_obj_local = timezone('US/Eastern').localize(date)		#local_tz
-			#print datetime_obj_local.strftime("%Y-%m-%d %H:%M:%S %Z%z")+ "is changed new time "
-			#print date
-			#print date.replace(pytz.timezone('US/Eastern'))
-			#print date.strftime('%x')
-
-			# add pull req repo to repos collection  -> change this
+			# add pull req repo to repos collection
 			repo_url = i['repository_url']
 			split = repo_url.rsplit('/')
 			repo_url = '/'.join([split[-2], split[-1]])
 			mytuple = ("pull_repo",repo_url)
 			mylist.append(mytuple)
+			# if the date of contribution is older than 1 year, add it to date exactly one year behind, same logic followed in sub sequent similar calculations
 			if local_date.strftime('%x') in final_result.keys():
 				final_list = final_result[local_date.strftime('%x')]
 				final_list[2]+=1		# increment the pull req count of the date by 1
@@ -171,10 +143,7 @@ while(1):
 	else:
 		break
 
-#print final_result
-#print "after issues"
-
-# 0-commits, 1-issues, 2-pull-requests, 3-created
+# Fetch issues of user which are issues, add to contributions if the repo is not forked
 iter=1
 url = "https://api.github.com/search/issues?q=type:issue+author:"+uname+"&per_page=100"
 while(1):
@@ -182,7 +151,6 @@ while(1):
 	jsonObj  = r.json()
 	if (r.status_code==200  or r.status_code == 304) and (len(jsonObj)!=0):
 		for i in jsonObj['items']:
-#			date = i['created_at'].split('T')[0]
 			utc_date = datetime.datetime.strptime(i['created_at'], "%Y-%m-%dT%H:%M:%SZ")
 			utc_date = utc.localize(utc_date)
 			local_date = utc_date.astimezone(get_localzone())		
@@ -202,34 +170,14 @@ while(1):
 	else:
 		break
 
-
-#print final_result
-
-
-# repoList = []
-# for currtuple in mylist:
-	# name,repoName = currtuple
-	# repoList.append(repoName)
-
-# uniqueRepoList = set(repoList)
-# conflictList = []
-# for currreponame in uniqueRepoList:
-	# currrepouser,reponame = split(currreponame,'/')
-	# repouserlist = re.search('(.*)/'+reponame)
-	# if(len(repouserlist)>1):
-		# conflictList.append((repouserlist))
-
-
-
 uniqueRepoEventSet = set(mylist)
-#forkset = set()
 forklist = []
 uniqueRepoEventList = list(uniqueRepoEventSet)
 repoList =  [x[1] for x in uniqueRepoEventList]
 uniqueRepoSet = set(repoList)
 
+# get uniques repos, to prevent duplicate API calling on same repo
 for repo in uniqueRepoSet:
-	#event, repo = repoEvent
 	url = "https://api.github.com/repos/"+repo
 	r = requests.get(url,auth = ('shyamkatta','f49cb7f4e110672f4ddc22657b4886f04dad2e40'),headers={"Content-Type": "application/json"})
 	if r.status_code==200 or r.status_code == 304:
@@ -244,19 +192,10 @@ for repoEvent in uniqueRepoEventList:
 	if repo not in forklist:
 		FinalRepoEventList.append(repoEvent)
 
-
-#print(len(uniqueRepoEventSet))		
-#print len(forkset)			
-#print len(forklist)
 temp_new_list = set([x[1] for x in FinalRepoEventList])
-#print len(FinalRepoEventList)
-#print mycounts
-#print totalcount
-
 temp_list = set([x[0] for x in  FinalRepoEventList])
-# print temp_list
 
-#uname = "harshakanamanapalli"
+# for the unique repos obtained earlier, fetch all commits as contributions if the commit is performed by current user 
 for i in temp_new_list:
 	if (1):#i[0]=="org_repo" or i[0]=="user_repo"):
 		# get the user commits from this repo
@@ -264,13 +203,10 @@ for i in temp_new_list:
 		iter=0
 		while(1):
 			iter+=1
-			#print url+"&page="+str(iter)+"&per_page=100"
 			r = requests.get(url+"&page="+str(iter)+"&per_page=100",auth = ('shyamkatta','f49cb7f4e110672f4ddc22657b4886f04dad2e40'),headers={"Content-Type": "application/json"})
 			jsonObj  = r.json()
 			if (r.status_code==200 or r.status_code == 304) and (len(jsonObj)!=0):
 				for res in jsonObj:
-					# if res['commit']['author']['name']==uname:
-					#print res['commit']['author']['date']
 					utc_date = datetime.datetime.strptime(res['commit']['author']['date'], "%Y-%m-%dT%H:%M:%SZ")
 					utc_date = utc.localize(utc_date)
 					local_date = utc_date.astimezone(get_localzone())
@@ -289,13 +225,13 @@ for i in temp_new_list:
 			else:
 				break
 
-#print sorted(final_result.items())
 formated_list=[]
 
+# Convert the same to JSON compatible strings
 for key in sorted(final_result.keys()):
 	temp_list = { "date": key,  "commits":final_result[key][0], "pull_requests":final_result[key][1], "issues":final_result[key][2], "create_repo":final_result[key][3] }
 	formated_list.append(temp_list)
 
+# Convert to JSON format and print the same, Node applciation will consume this printed json from stdout 
 import json
 print json.dumps(formated_list)
-#print formated_list

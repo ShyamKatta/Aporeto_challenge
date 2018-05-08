@@ -4,273 +4,50 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
-    <style>
-        #fade {
-			display: none;
-			position:absolute;
-			top: 0%;
-			left: 0%;
-			width: 100%;
-			height: 100%;
-			background-color: #ababab;
-			z-index: 1001;
-			-moz-opacity: 0.8;
-			opacity: .70;
-			filter: alpha(opacity=80);
-		}
-		
-		#modal {
-			display: none;
-			position: absolute;
-			top: 35%;
-			left: 41%;
-			width: 350px;
-			height: 250px;
-			padding:30px 15px 0px;
-			border: 3px solid #ababab;
-			box-shadow:1px 1px 10px #ababab;
-			border-radius:20px;
-			background-color: white;
-			z-index: 1002;
-			text-align:center;
-			overflow: auto;
-		}
-        .tooltip_1 {
-            position: relative;
-            display: inline-block;
-            border-bottom: 1px dotted black;
-        }
-        
-        .tooltip_1 .tooltiptext_1 {
-            visibility: hidden;
-            width: 120px;
-            background-color: black;
-            color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px 0;
-        
-            /* Position the tooltip */
-            position: absolute;
-            z-index: 1;
-        }
-        
-        .tooltip_1:hover .tooltiptext_1 {
-            visibility: visible;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="my_style.css">
+    
     <body onload=loadFun()>
 
-            <center>
-                    <div id="modal">
-                            <!-- You can add gif image here 
-                            for this demo we are just using text -->
-                            <img src="https://cdn.pbrd.co/images/Hk7Fnao.gif"  class="loading">
-                    </div>   
-            <h2>Enter your exact github name in text box below</h2>
-            <br><br> Github User name: <input type="text" class="form-control " style="width:20%; position:relative" id="rand" placeholder="Github Username" /required>
-            <br>
-            Please enter choose a date to display results from this date:
-            <input name="name" class="form-control " style="width:20%;"type="date" id="input_date"/><br><br>
-            
-            <button id="button-container" type="button" class="btn btn-success">click here</button>
-            <br><br>
-            <div id="index_output" class="alert alert-info"  ></div>
-            <div id="repositories_table_output" style="width:50%;" style="display:none;">   <!--word-wrap:break-word -->
-            
-            <h3 id ="index" style="display: none">
-                Contributions grouped by date
-            </h3>
-            <br>
-            <table id="myTable" class="table table-striped" style="display: none; " align="center" >
-            <center>
-                <tr>
-                    <th>
-                        Contributions by Date
-                    </th>
-                    <th>
-                        Contributions Split
-                    </th>
-                </tr>
-            </center>
-            </table>
-            </div>
-			<div id="repositories_output" style="width:50%;" style="display:none;">
-			</div>
-            </center>
-            
-        </body>
-    <script>
-        $(document).ajaxStart(function() {
-            $("#modal").show();
-            $("#fade").show();
-            }).ajaxStop(function() {
-            $("#modal").hide();
-            $("#fade").hide();
-        });
-
-        $(document).ready(function () {
-            $("button").click(function () {
-                loadFun();
-                //console.log("alert");
-                if($('#rand').val().length==0){
-                    alert("Please input a github username");
-                    return;
-                }
-                $.ajax({
-                    url: "https://api.github.com/users/"+$('#rand').val()+"/repos",
-                    type: "GET",
-                    success: function(response){
-                        if (response.status == 404) {
-                            $("#index_output").show();
-                            //alert("Invalid Username");
-                            $("#index_output").html("No such user found.");
-                        }
-                        else{
-                            $.ajax({
-                            url: "http://localhost:3000/MyGitContributionsAPI?uname="+$('#rand').val(),
-                            type: "GET",
-                            //data: { uname: $('#rand').val() },
-                            success: function (response) {
-                                if (response.status == 404) {
-                                    alert("sdgdf");
-                                    $("#index_output").html("No such user found.");
-                                }
-                                else {
-                                    //alert("ok response");
-                                    console.log("data  ",JSON.parse(JSON.stringify(response)));
-                                    var contributionsObject = JSON.parse(JSON.stringify(response));
-                                    myFunction1(contributionsObject)
-
-                                }
-                            },
-                            error: function (response) {
-                            $("#index_output").show();
-                            $("#index").hide();
-                            $("#myTable").hide();
-                            $("#index_output").html("API call failed - if you are the owner, please check server status.");
-                            }
-                            });
-                        }
-                    },
-                    error: function(err) {
-                        //alert("Invalid Username");
-                        $("#index_output").show();
-                        $("#index_output").html("No such user found.");
-                    }
-                });
-            });
-        });
-
-        //myFunction();
-		
-		function loadFun(){
-            $("#loading").hide();
-            document.getElementById('index_output').style.display= "none";
-            var elem = document.getElementById('index');
-			document.getElementById('repositories_output').style.display = "none";
-			document.getElementById('repositories_table_output').style.display = "none";
-            if(typeof elem !== 'undefined' && elem !== null)
-			    document.getElementById('index').style.display = 'none';
-        }
-        var date_diff_indays = function(date1, date2) {
-            dt1 = new Date(date1);
-            dt2 = new Date(date2);
-            return Math.abs(Math.floor((Date.UTC(dt2.getFullYear(), dt2.getMonth(), dt2.getDate()) - Date.UTC(dt1.getFullYear(), dt1.getMonth(), dt1.getDate()) ) /(1000 * 60 * 60 * 24)));
-        }
-        function myFunction1(contributionsObject) {
-            let output_arr = new Array(365).fill(0);        // initialize array of 365 with all 0s
-            let output_arr_rel_data = new Array(365).fill(0);
-            let current_date = new Date();
-            let last_year = new Date(new Date().getTime()-365*1000*60*60*24);
-            last_year.setHours(0,0,0,0);
-            console.log(last_year);
-            let index;
-            var input = document.getElementById( 'input_date' ).value;
-            var select_date = new Date(input);
-            var new_search = [];
-            for(var i=0; i<contributionsObject.length; i++){
-                parts = contributionsObject[i].date.split("/");
-                console.log(parts);
-                temp_date = new Date(20+parts[2], parts[0] - 1, parts[1]);
-                temp_date.setHours(0,0,0,0);
-                console.log(temp_date);
-                index = date_diff_indays(last_year,temp_date)//((temp_date-last_year)/(1000*60*60*24))
-                console.log(temp_date);
-                console.log(last_year);
-                if(!!select_date.valueOf() && temp_date>select_date){
-                    console.log(index+" pushed here");
-                    new_search.push(index);
-                }
-                output_arr[index] = contributionsObject[i].commits + contributionsObject[i].pull_requests + contributionsObject[i].issues + contributionsObject[i].create_repo;
-                output_arr_rel_data[index] = "Date: "+ contributionsObject[i].date+"; Commits:"+ contributionsObject[i].commits+"; pull_Req:" + contributionsObject[i].pull_requests +"; Issues:" +contributionsObject[i].issues + "; Repos_created:"+contributionsObject[i].create_repo
-            }
-            
-            
-
-            if ( !!select_date.valueOf() ) { // Valid date, then display dates in date range
-                console.log("valid");
-				document.getElementById('index_output').style.display = 'block';
-                document.getElementById('myTable').style.display = 'table';
-                document.getElementById('index').style.display = 'block';
-                
-				document.getElementById('repositories_output').style.display = "none";
-				document.getElementById('repositories_table_output').style.display = 'block';
-                var table = document.getElementById("myTable");
-                var row, cell1, cell2;
-				if(typeof elem !== 'undefined' && elem !== null){
-					var rowCount = table.rows.length;
-					for (var i = rowCount - 1; i > 0; i--) {
-                    table.deleteRow(i);
-                }
-				}
-                
-                let total_contr = 0;
-                //console.log("I write  is written here");
-                for (var i = 0; i < new_search.length; i++) {
-                    if(output_arr[new_search[i]]!=0){
-                        row = table.insertRow(1);
-                        cell1 = row.insertCell(0);
-                        cell2 = row.insertCell(1);
-                        total_contr += output_arr[new_search[i]];
-                        cell1.innerHTML = output_arr[new_search[i]]+" Contributions on "+output_arr_rel_data[new_search[i]].split(';').slice(0,1);
-                        cell2.innerHTML = output_arr_rel_data[new_search[i]].split(';').slice(1);
-                    }
-                }
-                document.getElementById('index_output').innerHTML = "<p><strong> Contribution of user: " + $('#rand').val()+
-                    " after date - "+select_date.toString().split(' ').slice(0, 4).join(' ')+" is  <u>"+total_contr+"</u><p>Please note - all contributions visible on date "
-                        +last_year.toString().split(' ').slice(0, 4).join(' ')+
-                        " are cumulative contributions on and before of "+last_year.toString().split(' ').slice(0, 4).join(' ')+"</p></strong></p>";
-            }
-            else{
-                document.getElementById('index_output').style.display = 'block';
-                document.getElementById('index_output').innerHTML = "<h2><strong> Contribution Array of user: " + $('#rand').val() + "</strong></h1><br>"+
-                    "<p>Please note - all contributions visible on date "+last_year.toString().split(' ').slice(0, 4).join(' ')+" are cumulative contributions on and before of "+last_year.toString().split(' ').slice(0, 4).join(' ')+"</p>";
-                //document.getElementById('repositories_output').innerHTML = "<span>"+output_arr[354]+"</div>"//"<span class='tooltip'>"+output_arr[354] +" ,<span class='tooltiptext'>jamba</span></span>";
-				
-			document.getElementById('repositories_output').style.display = 'block';
-			document.getElementById('repositories_table_output').style.display = "none";
-                document.getElementById('repositories_output').innerHTML = "{";
-                for(var i=0; i<output_arr.length; i++){
-                    document.getElementById('repositories_output').innerHTML += "<span class='tooltip_1'>"+output_arr[i] +" ,<span class='tooltiptext_1'>"+output_arr_rel_data[i]+"</span></span>";
-                    //$('repositories_output').add("<span class='tooltip'>"+output_arr[i] ,+"<span class='tooltiptext'>"+output_arr_rel_data[i]+"</span></span>")
-                }
-                document.getElementById('repositories_output').innerHTML += "}";
-            }
-        }    
-        
+    <center>
+    <div id="modal">
+        <img src="https://cdn.pbrd.co/images/Hk7Fnao.gif"  class="loading">
+    </div>   
+    <h2>Enter your exact github name in text box below</h2>
+    <br><br> Github User name: <input type="text" class="form-control " style="width:20%; position:relative" id="rand" placeholder="Github Username" /required>
+    <br>
+    Please enter choose a date to display results from this date:
+    <input name="name" class="form-control " style="width:20%;"type="date" id="input_date"/><br><br>
     
+    <button id="button-container" type="button" class="btn btn-success">click here</button>
+    <br><br>
+    <div id="index_output" class="alert alert-info"  ></div>
+    <div id="repositories_table_output" style="width:50%;" style="display:none;">   <!--word-wrap:break-word -->
+    
+    <h3 id ="index" style="display: none">
+        Contributions grouped by date
+    </h3>
+    <br>
+    <table id="myTable" class="table table-striped" style="display: none; " align="center" >
+    <center>
+        <tr>
+            <th>
+                Contributions by Date
+            </th>
+            <th>
+                Contributions Split
+            </th>
+        </tr>
+    </center>
+    </table>
+    </div>
+    <div id="repositories_output" style="width:50%;" style="display:none;">
+    </div>
+    </center>
+            
+    </body>
+    <script>
+        src="my_script.js"
     </script>
-    <style>
-        table,
-        td, th {
-            border: 1px solid black;
-			padding: 3px;
-			table-layout: fixed;
-			word-wrap: break-word;
-			width: 50%;
-        }
-    </style>
 </head>
 
 

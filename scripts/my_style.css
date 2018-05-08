@@ -52,3 +52,12 @@
 .tooltip_1:hover .tooltiptext_1 {
 	visibility: visible;
 }
+
+table,
+td, th {
+	border: 1px solid black;
+	padding: 3px;
+	table-layout: fixed;
+	word-wrap: break-word;
+	width: 50%;
+}

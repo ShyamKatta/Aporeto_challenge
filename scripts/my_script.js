@@ -22,15 +22,13 @@
 				//data: { uname: $('#rand').val() },
 				success: function (response) {
 					if (response.status == 404) {
-						alert("sdgdf");
+						//alert("sdgdf");
 						$("#index_output").html("No such user found.");
 					}
 					else {
 						//alert("ok response");
-						console.log("data  ",JSON.parse(JSON.stringify(response)));
 						var contributionsObject = JSON.parse(JSON.stringify(response));
 						myFunction1(contributionsObject)
-
 					}
 				},
 				error: function (response) {
@@ -61,22 +59,16 @@
 		let current_date = new Date();
 		let last_year = new Date(new Date().getTime()-365*1000*60*60*24);
 		last_year.setHours(0,0,0,0);
-		console.log(last_year);
 		let index;
 		var input = document.getElementById( 'input_date' ).value;
 		var select_date = new Date(input);
 		var new_search = [];
 		for(var i=0; i<contributionsObject.length; i++){
 			parts = contributionsObject[i].date.split("/");
-			console.log(parts);
 			temp_date = new Date(20+parts[2], parts[0] - 1, parts[1]);
 			temp_date.setHours(0,0,0,0);
-			console.log(temp_date);
-			index = date_diff_indays(last_year,temp_date)//((temp_date-last_year)/(1000*60*60*24))
-			console.log(temp_date);
-			console.log(last_year);
+			index = date_diff_indays(last_year,temp_date)
 			if(!!select_date.valueOf() && temp_date>select_date){
-				console.log(index+" pushed here");
 				new_search.push(index);
 			}
 			output_arr[index] = contributionsObject[i].commits + contributionsObject[i].pull_requests + contributionsObject[i].issues + contributionsObject[i].create_repo;
@@ -86,7 +78,6 @@
 	
 
 		if ( !!select_date.valueOf() ) { // Valid date, then display dates in date range
-			console.log("valid");
 			var table = document.getElementById("myTable");
 			var row, cell1, cell2;
 			var rowCount = table.rows.length;
@@ -97,7 +88,6 @@
 				table.deleteRow(i);
 			}
 			let total_contr = 0;
-			console.log("I write  is written here");
 			for (var i = 0; i < new_search.length; i++) {
 				if(output_arr[new_search[i]]!=0){
 					row = table.insertRow(1);
@@ -117,11 +107,9 @@
 			document.getElementById('index_output').style.display = 'block';
 			document.getElementById('index_output').innerHTML = "<h2><strong> Contribution Array of user: " + $('#rand').val() + "</strong></h1><br>"+
 				"<p>Please note - all contributions visible on date "+last_year.toString().split(' ').slice(0, 4).join(' ')+" are cumulative contributions on and before of "+last_year.toString().split(' ').slice(0, 4).join(' ')+"</p>";
-			//document.getElementById('repositories_output').innerHTML = "<span>"+output_arr[354]+"</div>"//"<span class='tooltip'>"+output_arr[354] +" ,<span class='tooltiptext'>jamba</span></span>";
 			document.getElementById('repositories_output').innerHTML = "{";
 			for(var i=0; i<output_arr.length; i++){
 				document.getElementById('repositories_output').innerHTML += "<span class='tooltip_1'>"+output_arr[i] +" ,<span class='tooltiptext_1'>"+output_arr_rel_data[i]+"</span></span>";
-				//$('repositories_output').add("<span class='tooltip'>"+output_arr[i] ,+"<span class='tooltiptext'>"+output_arr_rel_data[i]+"</span></span>")
 			}
 			document.getElementById('repositories_output').innerHTML += "}";
 		}
