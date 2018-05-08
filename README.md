@@ -11,6 +11,6 @@ Technical details for local run.
 - Replace host to localhost:3000, to test locally
 - Need to install few additional packages before running python script
 
-pip install requests, pip install pytz, pip install tzlocal. If running on wondows should prepend "Python -m"
+pip install requests, pip install pytz, pip install tzlocal. If running on windows should prepend "Python -m"
 
 Note - careful while dealing with date in python script, as the GIT displays contributions according to local date, Python date was handled to manage UTC to local time. See wiki for detailed implementation of date.
