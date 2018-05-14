@@ -5,49 +5,68 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
     <link rel="stylesheet" type="text/css" href="scripts/my_style.css">
-    
     <body onload=loadFun()>
 
-    <center>
-    <div id="modal">
-        <img src="https://cdn.pbrd.co/images/Hk7Fnao.gif"  class="loading">
-    </div>   
-    <h2>Enter your exact github name in text box below</h2>
-    <br><br> Github User name: <input type="text" class="form-control " style="width:20%; position:relative" id="rand" placeholder="Github Username" /required>
-    <br>
-    Please enter choose a date to display results from this date:
-    <input name="name" class="form-control " style="width:20%;"type="date" id="input_date"/><br><br>
-    
-    <button id="button-container" type="button" class="btn btn-success">click here</button>
-    <br><br>
-    <div id="index_output" class="alert alert-info"  ></div>
-    <div id="repositories_table_output" style="width:50%;" style="display:none;">   <!--word-wrap:break-word -->
-    
-    <h3 id ="index" style="display: none">
-        Contributions grouped by date
-    </h3>
-    <br>
-    <table id="myTable" class="table table-striped" style="display: none; " align="center" >
-    <center>
-        <tr>
-            <th>
-                Contributions by Date
-            </th>
-            <th>
-                Contributions Split
-            </th>
-        </tr>
-    </center>
-    </table>
-    </div>
-    <div id="repositories_output" style="width:50%;" style="display:none;">
-    </div>
-    </center>
+            <center>
+                    <div id="modal" class="modal">
+                            <!-- You can add gif image here -->
+                            <img src="https://cdn.pbrd.co/images/Hk7Fnao.gif"  class="loading">
+                    </div> 
+                    <div id="alert_modal" style="background-color:rgb(117, 112, 112);color:#fff;width:70%;height:200px;left:15%;" class="modal">
+                            Please Note - the access code generated expires in short time, the access_token generated using this access code will be persistent,
+                            but as the access token is private it is not exposed in any get requests and only processed in server side. There is <u><b>no implementation
+                            session or database in this project</b></u>. Therefore to check any private repos you need to <u><b>re-authorize</b></u> application from <u><strong>begining</strong></u>
+                        <br><br><button type="button" class="btn btn-danger" id="close_modal" >Close modal&times;</button>
+                    </div>
+
+            <h2>Enter your exact github name in text box below</h2>
+            <br><br> Github User name: <input type="text" class="form-control " style="width:20%; position:relative" id="rand" placeholder="Github Username" /required>
+            <br>
+            Please enter choose a date to display results from this date:
+            <input name="name" class="form-control " style="width:20%;"type="date" id="input_date"/><br><br>
             
-    </body>
-    <script>
-        src="scripts/my_script.js"
+            <button id="fetch_contrib" type="button" class="btn btn-success">Get My Contributions</button>
+            <button id="fetch_code" type="button" class="btn btn-warning">Authorize app</button><br>
+            <button id="home" type="button" class="btn btn-dark" onclick="location.href='http://git-contribution.us-east-2.elasticbeanstalk.com'"> Navigate to home</button>
+            <br><br>
+            <div id="index_output" class="alert alert-info"  ></div>
+            <div id="repositories_table_output" style="width:50%;" style="display:none;">   <!--word-wrap:break-word -->
+            
+            <h3 id ="index" style="display: none">
+                Contributions grouped by date
+            </h3>
+            <br>
+            <table id="myTable" class="table table-striped" style="display: none; " align="center" >
+            <center>
+                <tr>
+                    <th>
+                        Contributions by Date
+                    </th>
+                    <th>
+                        Contributions Split
+                    </th>
+                </tr>
+            </center>
+            </table>
+            </div>
+			<div id="repositories_output" style="width:50%;" style="display:none;">
+			</div>
+            </center>
+            
+        </body>
+    <script src="scripts/my_script.js">
+        
     </script>
+    <style>
+        table,
+        td, th {
+            border: 1px solid black;
+			padding: 3px;
+			table-layout: fixed;
+			word-wrap: break-word;
+			width: 50%;
+        }
+    </style>
 </head>
 
 

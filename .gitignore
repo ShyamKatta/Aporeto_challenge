@@ -1,0 +1,7 @@
+# ignore node modules
+node_modules/
+
+scripts/sample_test.py
+Aporeto_Assignment.zip
+./vscode/
+images/

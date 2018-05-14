@@ -1,0 +1,198 @@
+https://www.mathworks.com/matlabcentral/answers/300915-matlab-web-integration
+
+
+https://stackoverflow.com/questions/1828874/generating-statistics-from-git-repository
+https://help.github.com/articles/viewing-contributions-on-your-profile/
+https://github.community/t5/Support-Series/Getting-all-your-commits-in-your-contributions-graph/ba-p/19
+https://help.github.com/articles/viewing-contributions-on-your-profile/	-- how contributions calculated
+
+***********	Python from  nodejs
+
+https://stackoverflow.com/questions/23450534/how-to-call-python-function-from-nodejs
+https://www.geeksforgeeks.org/run-python-script-node-js-using-child-process-spawn-method/
+https://www.sohamkamani.com/blog/2015/08/21/python-nodejs-comm/
+
+*********** Python date time
+https://stackoverflow.com/questions/35057968/get-system-local-timezone-in-python/35058476
+python -m pip install python-dateutil
+python -m pip install tzlocal
+date to string and string to date
+https://gist.github.com/eculver/765777
+
+https://pypi.org/project/tzlocal/
+
+********Authentication
+
+https://developer.github.com/v3/#authentication
+Private repos even if you have token, scope
+https://stackoverflow.com/questions/21907278/github-api-using-repo-scope-but-still-cant-see-private-repos?rq=1
+
+https://requests-oauthlib.readthedocs.io/en/latest/oauth2_workflow.html#web-application-flow
+
+http://docs.python-requests.org/en/master/user/authentication/
+Referred 1st  time oauth git
+https://gist.github.com/technoweenie/419219/5ee1eb7646fd479d398c6855fc2ad35a621c9a1c
+
+http://requests-oauthlib.readthedocs.io/en/latest/examples/github.html
+
+***** JS parse URL
+https://stackoverflow.com/questions/10609511/javascript-url-parameter-parsing
+
+*** code
+import datetime
+
+date = datetime.datetime.strptime('2018-05-02T02:23:54Z', "%Y-%m-%dT%H:%M:%SZ")
+print date #-> 2018-05-02 02:23:54
+
+import pytz
+from tzlocal import get_localzone
+get_localzone()
+#  print date 2018-05-02 02:23:54
+utc = pytz.timezone('UTC')
+utc_time = utc.localize(date)
+from pytz import timezone
+print utc_time.astimezone(timezone('America/New_York'))
+local_date =  utc_time.astimezone(get_localzone())
+local_date.strftime('%x')
+
+
+utc_date = datetime.datetime.strptime(i['created_at'], "%Y-%m-%dT%H:%M:%SZ")
+utc_date = utc.localize(utc_date)
+local_date = utc_date.astimezone(get_localzone)
+
+***********
+ajax - load - http://www.itgeared.com/articles/1506-how-to-display-image-spinner-ajax-request/
+
+https://github.com/sibicramesh/Aporeto-Coding-Challenge-2017/blob/master/Source/server.js
+
+https://github.com/harshakanamanapalli?tab=overview&from=2018-02-18
+
+************
+https://stackoverflow.com/questions/21322778/how-do-i-get-a-list-of-all-the-github-projects-ive-contributed-to-in-the-last-y
+
+----------------This idg;odfhgakhg---------------------
+https://stackoverflow.com/questions/20714593/github-api-repositories-contributed-to
+
+https://stackoverflow.com/questions/36410357/github-v3-api-list-contributors
+
+https://stackoverflow.com/questions/28510568/github-api-get-number-of-contributions-on-a-day-by-day-basis
+
+https://api.github.com/users/shyamkatta/repos
+
+
+https://help.github.com/articles/why-are-my-contributions-not-showing-up-on-my-profile/
+
+developer.github.com/v3/issues 
+developer.github.com/v3/repos/#list-user-repositories 
+developer.github.com/v3/activity/events 
+developer.github.com/v3/pulls
+developer.github.com/v3/repos/commits
+developer.github.com/v3/repos/forks
+
+created in repositories also counted as contribution
+
+https://api.github.com/search/repositories?q=user:shyamkatta
+just search in repositories forked = false
+how abou trepositories you have contributed to ? events? only 300 event
+pull requests 
+
+----------
+https://api.github.com/repos/harshakanamanapalli/Locking-XINU-OS/contributors
+
+https://stackoverflow.com/questions/10590998/how-to-get-all-of-a-users-public-github-commits/10669967
+
+https://help.github.com/articles/searching-repositories/#scope-the-search-fields
+
+stas/contributors different from contributors
+need to use /contributors not /stats/contributors
+
+privat oauth 
+https://developer.github.com/apps/building-oauth-apps/authorization-options-for-oauth-apps/
+https://stackoverflow.com/questions/16961947/how-to-list-organizations-private-repositories-via-github-api
+-----------
+search issues 
+https://developer.github.com/v3/search/#search-issues
+
+https://api.github.com/users/Dogild/orgs
+https://api.github.com/orgs/aporeto-inc/repos
+https://api.github.com/repos/aporeto-inc/trireme-lib/commits
+
+https://api.github.com/repos/aporeto-inc/trireme-lib/commits?since=%222018-5-1%22
+
+I can fetch all the repos user is contributing to, can fetch commits user made weekely, but how to get user commits on daily basis
+
+https://api.github.com/repos/saiharsha1994/wolfpool/commits?author=saiharsha1994&per_page=40
+
+https://api.github.com/repos/aporeto-inc/trireme-lib/commits?until=%222017-5-1%22
+
+https://api.github.com/repos/saiharsha1994/wolfpool/issues?state=all&per_page=1000
+
+https://api.github.com/repos/saiharsha1994/CSC510-Group-G/pulls?state=all&per_page=100 -- 80 pull request created by santhosh merged by harsha
+
+https://developer.github.com/v3/activity/events/
+https://developer.github.com/v3/issues/
+
+
+I tried implementing something like this a while ago for a Github summarizer... My steps to get the repositories the user contributed to, which they didn't own, was as follows (going to use my own user as an example):
+
+    Search for that last 100 closed pull requests the user submitted. Of course you could request the second page if the first page is full to get even older prs
+
+https://api.github.com/search/issues?q=type:pr+state:closed+author:megawac&per_page=100&page=1
+
+    Next I would request each of these repos contributors. If the user in question is in the contributors list we add the repo to the list. Eg:
+
+https://api.github.com/repos/jashkenas/underscore/contributors
+
+    We might also try checking all the repos the user is watching. Again we would check each repos repos/:owner/:repo/contributors
+
+https://api.github.com/users/megawac/subscriptions
+
+    In addition I would iterate all the repos of the organizations the user is in
+
+https://api.github.com/users/megawac/orgs
+https://api.github.com/orgs/jsdelivr/repos
+
+    If the user is listed as a contributor to any of the repos there we add the repo to the list (same step as above)
+
+This misses repos where the user has submitted no pull requests but has been added as a contributor. We can increase our odds of finding these repos by searching for
+
+1) any issue opened (not just closed pull requests)
+2) repos the user has starred
+
+Clearly, this requires many more requests than we would like to make but what can you do when they make you fudge features \o/
+
+curl 'https://api.github.com/users/whatever?client_id=xxxx&client_secret=yyyy'
+client_id=d3653ed7b5aa1c180cff&client_secret=b502132e1797209549d277bce3f0bdf4a7b64a5e
+
+curl https://api.github.com/?access_token=OAUTH-TOKEN
+Private Token : ?access_token=f49cb7f4e110672f4ddc22657b4886f04dad2e40
+
+db873d692c431fc9e28a7c19c381d7d01663c8cb
+
+?code=6e5edece7abc7267d323
+
+- redirect  link 
+https://github.com/login/oauth/authorize?client_id=d3653ed7b5aa1c180cff&redirect_uri=http://git-contribution.us-east-2.elasticbeanstalk.com/oauth/success
+
+http://git-contribution.us-east-2.elasticbeanstalk.com/MyContributions?code=b110878162de539f3965
+
+089b3691ee2436ae271c
+
+//oauth/success&scope=repo
+
+https://github.com/login/oauth/access_token?client_id=d3653ed7b5aa1c180cff&redirect_uri=http://git-contribution.us-east-2.elasticbeanstalk.com/oauth/success&client_secret=b502132e1797209549d277bce3f0bdf4a7b64a5e&code=f4dd4d7fffea9eaeadee
+--srikar code - f4dd4d7fffea9eaeadee
+access_token=7caa322a3d6ce41621c1e779167b22cad7f17620&scope=repo&token_type=bearer
+
+https://api.github.com/user/repos?access_token=7caa322a3d6ce41621c1e779167b22cad7f17620&scope=repo		--> all repos - if empty switch to user name 
+
+-- srikar code = 1384d03c0721121fca62
+access_token=aac36678717129b8881c2a11dc10c4e03ba92fcc&scope=&token_type=bearer
+access_token=607cd81a547250396b7dbd60f7d34dd06175a4a4&scope=repo&token_type=bearer
+POST https://github.com/login/oauth/access_token?client_id=d3653ed7b5aa1c180cff&redirect_uri=http://git-contribution.us-east-2.elasticbeanstalk.com/oauth/success&client_secret=b502132e1797209549d277bce3f0bdf4a7b64a5e&code=1384d03c0721121fca62
+
+access_token=788b2ab82b2dc82f12ccc7f9ee7c43f8463389f6&scope=&token_type=bearer
+
+https://auth0.com/docs/connections/social/github
+http://requests-oauthlib.readthedocs.io/en/latest/oauth2_workflow.html#web-application-flow
+https://pearswj.co.uk/blog/github-oauth-python 	 
