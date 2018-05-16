@@ -1,8 +1,8 @@
 # Aporeto_challenge
 
-Deployed link - http://contrib.us-east-2.elasticbeanstalk.com/
+Deployed link - http://git-contribution.us-east-2.elasticbeanstalk.com/
 
-Rest API call - http://contrib.us-east-2.elasticbeanstalk.com/MyGitContributionsAPI?uname={GIT_Username}
+Rest API call - http://git-contribution.us-east-2.elasticbeanstalk.com/MyGitContributionsAPI?uname={GIT_Username}&access_code={Access Code of user}
 
 Wiki page - https://github.com/ShyamKatta/Aporeto_challenge/wiki
 
